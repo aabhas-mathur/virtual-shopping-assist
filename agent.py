@@ -1,23 +1,27 @@
 from src.llm_module import chat  # Import LLM chat function
 from src import tools  # Import all tool functions
 from loguru import logger
+
+
 def format_reply(response_data):
     """Converts tool outputs into a conversational assistant response."""
-    
-    if "response" in response_data:  
+
+    if "response" in response_data:
         # LLM fallback response
         return f"🤖 {response_data['response']}"
-    
+
     message = "🛍️ Here’s what I found for you:\n\n"
 
     if "products" in response_data:
         products = response_data["products"]
         for product in products:
             message += f"✨ {product['name']} - ${product['price']} (Size: {product.get('size', 'N/A')})\n"
-    
+
     if "discount" in response_data:
-        message += f"🎉 Discount available: {response_data['discount']['discount']} off!\n"
-    
+        message += (
+            f"🎉 Discount available: {response_data['discount']['discount']} off!\n"
+        )
+
     if "shipping" in response_data:
         message += f"🚚 Estimated shipping time: {response_data['shipping']['shipping_time']}\n"
 
@@ -29,6 +33,7 @@ def format_reply(response_data):
 
     return message.strip()
 
+
 def react_reasoning(query):
     """Uses ReAct + Toolformer-style execution, returning assistant-like responses."""
     reasoning_steps = []
@@ -37,20 +42,22 @@ def react_reasoning(query):
     if "find" in query_lower:
         reasoning_steps.append("Searching for matching products...")
         products = tools.search_products(query)
-        logger.debug(f"{products=}")
+        # logger.debug(f"{products=}")
 
         # Handle case when no matching products are found
         if isinstance(products, dict) and "competitor" in products:
             competitor_info = products["competitor"]
-            reasoning_steps.append("No matching products found. Suggesting competitor option.")
-            logger.debug(f"{reasoning_steps=}")
+            reasoning_steps.append(
+                "No matching products found. Suggesting competitor option."
+            )
+            # logger.debug(f"{reasoning_steps=}")
             return {
                 "response": f"Sorry, we don’t have that, but another supplier ({competitor_info['store']}) offers it for ${competitor_info['price']}."
             }
 
         if not products:
             reasoning_steps.append("No products found. Switching to LLM response.")
-            logger.debug(f"{reasoning_steps=}")
+            # logger.debug(f"{reasoning_steps=}")
             return {"response": chat(query)}
 
         reasoning_steps.append("Products found. Checking additional details.")
@@ -62,11 +69,15 @@ def react_reasoning(query):
         # Check for price constraint (if "under" exists in the query)
         if "under" in query_lower:
             try:
-                price_limit = int(next(word for word in query_lower.split() if word.isdigit()))
+                price_limit = int(
+                    next(word for word in query_lower.split() if word.isdigit())
+                )
                 filtered_products = [p for p in products if p["price"] <= price_limit]
 
                 if not filtered_products:
-                    reasoning_steps.append(f"No products under ${price_limit}. Suggesting competitor price.")
+                    reasoning_steps.append(
+                        f"No products under ${price_limit}. Suggesting competitor price."
+                    )
                     competitor_price = tools.compare_competitor_prices(product_name)
                     return {
                         "response": f"Sorry, we don’t have that, but another supplier offers it for ${competitor_price}."
@@ -74,7 +85,9 @@ def react_reasoning(query):
 
                 response_data["products"] = filtered_products
             except StopIteration:
-                reasoning_steps.append("Failed to extract price limit. Proceeding normally.")
+                reasoning_steps.append(
+                    "Failed to extract price limit. Proceeding normally."
+                )
 
         # Additional tool-based responses
         if "discount" in query_lower:
@@ -87,7 +100,9 @@ def react_reasoning(query):
 
         if "compare price" in query_lower:
             reasoning_steps.append("Comparing competitor prices...")
-            response_data["competitor_price"] = tools.compare_competitor_prices(product_name)
+            response_data["competitor_price"] = tools.compare_competitor_prices(
+                product_name
+            )
 
         if "return policy" in query_lower:
             reasoning_steps.append("Checking return policy...")
@@ -100,6 +115,17 @@ def react_reasoning(query):
 
 
 if __name__ == "__main__":
-    user_query = "what is a shoe? "
-    response = react_reasoning(user_query)
-    logger.info(format_reply(response))
+    logger.info(
+        "Hello, I am your Virtual shopping assistant. I can help you out with the following:"
+    )
+    logger.info(
+        "1. Price of the available product \n 2. Available discount\n 3. Shipping timing\n 4. Compare prices with competitors\n 5. Return Policy\n"
+    )
+
+    logger.info("I can tell you about the following available products:")
+    logger.info("Shoes,\tShirt,\tBelt,\tSocks,\tDress,\tand Blouse\n")
+    while True:
+
+        user_query = input("Please let me know how can I help?\n")
+        response = react_reasoning(user_query)
+        logger.info(format_reply(response))

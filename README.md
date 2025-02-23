@@ -37,5 +37,101 @@ Adaptability, efficiency, interpretability, and robustness in managing a variety
 - The main idea behind ReST (Reinforced Self-Training), which builds on ReAct, is for the model to learn from past decisions. This will be very helpful for personalised recommendation since it allows LLMs to learn and suggest new products to users based on past decisions.
 - When it comes to collecting and processing data for websites that require web crawling and specified outputs, Toolformer and Chain of Tools are extremely effective techniques that allow the LLMs to choose which tool to employ.
 
-## Conclusion
+## Conclusion of Analysis
 In terms of logic, tool usage, and overall agent design, each paradigm offers unique advantages and disadvantages. While LATS and ReST offer structured optimisation, ReST uses reinforcement for continual improvement, while ReAct is more flexible but prone to inefficiencies. Toolformer prioritises automation above interpretability by integrating tool choices at the model level. Complex operations are made possible by Chain-of-Tools, but careful coordination is needed. The needs of the application—whether they emphasise efficiency, flexibility, or organised execution—determine the approach to be used. As LLM research develops, hybrid techniques that combine these tactics might appear, improving tool integration and reasoning for more extensive real-world use cases.
+
+
+## Annotated Logs
+```base
+Hello, I am your Virtual shopping assistant. I can help you out with the following:
+ 1. Price of the available product 
+ 2. Available discount
+ 3. Shipping timing
+ 4. Compare prices with competitors
+ 5. Return Policy
+
+I can tell you about the following available products:
+Shoes,  Shirt,  Belt, Socks,  Dress,  and Blouse
+
+Please let me know how can I help?
+INPUT->Find me a Good pair of shoes with some good discount, compare prices, and let me know the return policy if possible.
+🛍️ Here’s what I found for you:
+
+✨ Running Shoes - $80 (Size: 9)
+✨ Casual Sneakers - $50 (Size: 10)
+🎉 Discount available: 10% off!
+💰 Competitor price: $9 at TrendMart
+🔄 Return policy: No return on discounted items
+
+```
+In the above Logs you can see that using the virtual shopping assistant is very self explanatory, it has fixed functions that it can perform that are listed on the top along with that it has very limited number of available products since it a Mock and we are not pulling data form webpage we have added simulated data for the mock. 
+The user can ask virtual assistant for multiple things at once and if the data is available in the Database, the Agent will help you find the best deal.
+
+
+## Design Decisions
+Agent Architecture & Reasoning
+
+- We chose a ReAct-inspired reasoning framework to enable structured decision-making before tool use.
+
+- This helps the agent evaluate when and which tools to invoke, reducing unnecessary calls.
+
+Tool Invocation & Integration
+
+- Implemented structured function calls instead of free-text parsing to ensure reliability.
+
+- Allows for easy expansion by adding new mock tool APIs.
+
+Multi-Step Query Handling
+
+- The agent processes multiple user constraints (e.g., price, discount, shipping) and calls tools accordingly.
+
+- Uses a step-by-step breakdown to handle complex queries seamlessly.
+
+Error Handling & Fallbacks
+
+- Added basic error handling to prevent failures if a tool returns an invalid response.
+
+- Example: If search_products() fails, the agent suggests similar alternatives.
+
+## Challenges & Improvements 
+
+🔹 1. Scalability Issues
+- Challenge:
+  - Current implementation is mock-based (limited set of tools & data).
+  - Real-world integration would require handling large datasets and real API calls.
+- Future Improvement:
+  - Implement real API connections for e-commerce platforms.
+  - Optimize tool selection strategy for better efficiency.
+
+
+🔹 2. Tool Invocation & Response Handling
+- Challenge:
+  - Ensuring the agent correctly interprets user queries and picks the right tools.
+  - Some tools may return unexpected or incomplete results (e.g., missing discount details).
+- Future Improvement:
+  - Use fallback mechanisms (if one tool fails, try an alternative approach).
+  - Improve error detection in tool outputs (e.g., flagging missing values).
+  
+🔹 3. Handling Multi-Step Reasoning & Dependencies
+- Challenge:
+  - Some queries require multiple tools (e.g., searching for an item, applying a discount, checking shipping).
+  - Ensuring the correct order of tool execution is difficult.
+- Future Improvement:
+  - Implement state tracking so the agent remembers previous tool outputs.
+  - Experiment with Tree Search (LATS-based planning) for better decision-making.
+
+🔹 4. Error Handling & Agent Self-Correction
+- Challenge:
+  - If a tool provides incorrect or no response, the agent currently does not retry or adjust its reasoning.
+  - Some discount codes may be invalid, but the agent still applies them.
+- Future Improvement:
+  - Implement self-correction by re-evaluating failed tool outputs.
+  - Train the agent to ask follow-up questions if information is missing.
+  
+🔹 5. Adaptability to Unseen Queries
+- Challenge:
+  - The agent is designed for specific e-commerce queries (e.g., price, discount, shipping).
+  - If a user asks an out-of-scope question, it may not respond effectively.
+- Future Improvement:
+  - Use few-shot prompting to generalize better to new queries.
+  - Integrate LLM fine-tuning on more diverse shopping-related prompts.

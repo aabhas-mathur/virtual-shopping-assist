@@ -28,8 +28,3 @@ def chat(prompt):
     inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
     outputs = model.generate(**inputs, max_new_tokens=150)
     return tokenizer.decode(outputs[0], skip_special_tokens=True)
-
-
-# Test run
-if __name__ == "__main__":
-    print(chat("Find a floral skirt under $40 in size S. Is it in stock?"))
