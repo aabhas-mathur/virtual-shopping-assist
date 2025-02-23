@@ -1,0 +1,56 @@
+default_stages: [pre-commit] #[pre-commit, pre-push]
+default_language_version:
+    python: python3
+fail_fast: false
+repos:
+- repo: https://github.com/ambv/black
+  rev: 25.1.0
+  hooks:
+  - id: black
+    name: Black Formatter
+    language_version: python3
+- repo: https://github.com/jorisroovers/gitlint
+  rev:  v0.19.1
+  hooks:
+  - id: gitlint
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0
+  hooks:
+  - id: detect-private-key
+    name: Detecting Private Keys
+  - id: end-of-file-fixer
+    language: python
+    types: [python]
+  - id: check-toml
+  - id: check-yaml
+  - id: check-symlinks
+  - id: check-merge-conflict
+  - id: debug-statements
+  - id: check-added-large-files
+  - id: check-json
+  - id: trailing-whitespace
+    name: Trim Trailing Whitespace
+    description: This hook trims trailing whitespace.
+    language: python
+    types: [python]
+- repo: https://github.com/econchick/interrogate
+  rev: 1.7.0  # or master if you're bold
+  hooks:
+  - id: interrogate
+    exclude: main.py|constants.py|docs|experimental|scripts|config|health_check|tests
+    args: [--ignore-init-method, --ignore-magic, --ignore-property-decorators, --ignore-setters, --verbose, --fail-under=10]
+- repo: https://github.com/python-poetry/poetry
+  rev: '1.6.1'  # add version here
+  hooks:
+    - id: poetry-check
+      description: Makes sure the poetry configuration does not get committed in a broken state.
+    - id: poetry-lock
+      description: Makes sure the lock file is up-to-date when committing changes.
+    - id: poetry-export
+      args: ["-f", "requirements.txt", "--output", "requirements.txt", "--without-hashes"]
+      description: Syncs requirements.txt file with current dependencies in pyproject.toml.
+
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.9.7
+  hooks:
+    - id: ruff

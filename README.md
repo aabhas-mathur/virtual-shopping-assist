@@ -1,6 +1,10 @@
 ## Description of the diagram
 The Drawio Diagram depicts, how the large language models or LLM's decide whether to use the external tool or not and how tools can be used if needed. It starts with prompt input, and the LLM decides whether to directly generate the answer or to use the tool. If tools are needed, the LLM chooses from many possible APIs in which techniques like ReAct, LATS, ToolFormer, and chain of tools are used. The model then communicates with the tools/API or tool chains, processes the tool's response, iterates as needed before integrating the data to produce the final output, and learns from the output using ReST.
 
+<p align="center">
+  <img src="docs/concept_diagram.png" alt="Alt text" width="300">
+</p>
+
 
 # Conceptual Analysis
 
