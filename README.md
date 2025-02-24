@@ -41,8 +41,9 @@ Adaptability, efficiency, interpretability, and robustness in managing a variety
 In terms of logic, tool usage, and overall agent design, each paradigm offers unique advantages and disadvantages. While LATS and ReST offer structured optimisation, ReST uses reinforcement for continual improvement, while ReAct is more flexible but prone to inefficiencies. Toolformer prioritises automation above interpretability by integrating tool choices at the model level. Complex operations are made possible by Chain-of-Tools, but careful coordination is needed. The needs of the application—whether they emphasise efficiency, flexibility, or organised execution—determine the approach to be used. As LLM research develops, hybrid techniques that combine these tactics might appear, improving tool integration and reasoning for more extensive real-world use cases.
 
 
-## Annotated Logs
+## Annotated Logs & Example Run
 ```base
+<Info provided by script>
 Hello, I am your Virtual shopping assistant. I can help you out with the following:
  1. Price of the available product 
  2. Available discount
@@ -54,7 +55,10 @@ I can tell you about the following available products:
 Shoes,  Shirt,  Belt, Socks,  Dress,  and Blouse
 
 Please let me know how can I help?
-INPUT->Find me a Good pair of shoes with some good discount, compare prices, and let me know the return policy if possible.
+</Info provided by script>
+
+USER INPUT->Find me a Good pair of shoes with some good discount, compare prices, and let me know the return policy if possible.
+
 🛍️ Here’s what I found for you:
 
 ✨ Running Shoes - $80 (Size: 9)
